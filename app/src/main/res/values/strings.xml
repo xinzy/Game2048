@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">2048</string>
+
+    <string name="score">得分</string>
+    <string name="max_score">最高分</string>
+    <string name="press_to_exit">再按一次退出游戏~</string>
+</resources>
