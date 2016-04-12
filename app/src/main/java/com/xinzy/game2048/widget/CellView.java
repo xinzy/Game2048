@@ -169,4 +169,20 @@ public class CellView extends View
             canvas.drawText(text, mTargetRect.centerX(), baseline, mPaint);
         }
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+        {
+            return false;
+        } else if (! (o instanceof CellView))
+        {
+            return false;
+        } else
+        {
+            CellView other = (CellView) o;
+            return mNumber == other.getNumber();
+        }
+    }
 }

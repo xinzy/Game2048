@@ -39,6 +39,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     private int mCellSize;  // 每个格子的尺寸
 
     private int mScore;
+    private int maxScore;
     private boolean isGameover;
     private boolean isWin;
 
@@ -104,6 +105,8 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
         isWin = false;
         isGameover = false;
+        maxScore = 0;
+        mScore = 0;
         generateOneNumber();
         generateOneNumber();
     }
@@ -156,14 +159,14 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
         for (int i = 1; i < COLS; i++)
         {
-            if (mCells[0][i].getNumber() == mCells[0][i - 1].getNumber()) return false;
+            if (mCells[0][i].equals(mCells[0][i - 1])) return false;
         }
 
         for (int i = 1; i < ROWS; i++)
         {
             for (int j = 1; j < COLS; j++)
             {
-                if (mCells[i][j].getNumber() == mCells[i - 1][j].getNumber() || mCells[i][j].getNumber() == mCells[i][j - 1].getNumber())
+                if (mCells[i][j].equals(mCells[i - 1][j]) || mCells[i][j].equals(mCells[i][j - 1]))
                     return false;
             }
         }
@@ -351,7 +354,6 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
-        int maxScore = 0;
 
         for (int i = 0; i < ROWS; i ++)
         {
@@ -366,13 +368,13 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                             if (mCells[i][k].getNumber() == 0)
                             {
                                 mCells[i][k].setNumber(mCells[i][j].getNumber());
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 moved = true;
-                            } else if (mCells[i][k].getNumber() == mCells[i][j].getNumber())
+                            } else if (mCells[i][k].equals(mCells[i][j]))
                             {
                                 mCells[i][k].doubleNumber();
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 final int value = mCells[i][k].getNumber();
                                 if (maxScore < value)
@@ -390,24 +392,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
         if (moved)
         {
-            if (mOnStatusChangeListener != null)
-            {
-                mOnStatusChangeListener.onScoreAdded(Direct.Left, score);
-            }
-
-            mScore += score;
-            if (maxScore == SUCCESS_THRESHOLD)
-            {
-                win();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(true);
-            } else if (checkGameover())
-            {
-                gameover();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(false);
-            } else
-            {
-                generateOneNumber();
-            }
+            update(Direct.Left, score);
         }
     }
 
@@ -428,7 +413,6 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
-        int maxScore = 0;
 
         for (int i = 0; i < ROWS; i++)
         {
@@ -443,13 +427,13 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                             if (mCells[i][k].getNumber() == 0)
                             {
                                 mCells[i][k].setNumber(mCells[i][j].getNumber());
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 moved = true;
-                            } else if (mCells[i][k].getNumber() == mCells[i][j].getNumber())
+                            } else if (mCells[i][k].equals(mCells[i][j]))
                             {
                                 mCells[i][k].doubleNumber();
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 final int value = mCells[i][k].getNumber();
                                 if (maxScore < value)
@@ -467,24 +451,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
         if (moved)
         {
-            if (mOnStatusChangeListener != null)
-            {
-                mOnStatusChangeListener.onScoreAdded(Direct.Right, score);
-            }
-
-            mScore += score;
-            if (maxScore == SUCCESS_THRESHOLD)
-            {
-                win();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(true);
-            } else if (checkGameover())
-            {
-                gameover();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(false);
-            } else
-            {
-                generateOneNumber();
-            }
+            update(Direct.Right, score);
         }
     }
 
@@ -505,7 +472,6 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
-        int maxScore = 0;
 
         for (int j = 0; j < COLS; j ++)
         {
@@ -520,13 +486,13 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                             if (mCells[k][j].getNumber() == 0)
                             {
                                 mCells[k][j].setNumber(mCells[i][j].getNumber());
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 moved = true;
-                            } else if (mCells[k][j].getNumber() == mCells[i][j].getNumber())
+                            } else if (mCells[k][j].equals(mCells[i][j]))
                             {
                                 mCells[k][j].doubleNumber();
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 final int value = mCells[k][j].getNumber();
                                 if (maxScore < value)
@@ -544,24 +510,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
         if (moved)
         {
-            if (mOnStatusChangeListener != null)
-            {
-                mOnStatusChangeListener.onScoreAdded(Direct.Up, score);
-            }
-
-            mScore += score;
-            if (maxScore == SUCCESS_THRESHOLD)
-            {
-                win();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(true);
-            } else if (checkGameover())
-            {
-                gameover();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(false);
-            } else
-            {
-                generateOneNumber();
-            }
+            update(Direct.Up, score);
         }
     }
 
@@ -582,7 +531,6 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
-        int maxScore = 0;
 
         for (int j = 0; j < COLS; j++)
         {
@@ -597,13 +545,13 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                             if (mCells[k][j].getNumber() == 0)
                             {
                                 mCells[k][j].setNumber(mCells[i][j].getNumber());
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 moved = true;
-                            } else if (mCells[k][j].getNumber() == mCells[i][j].getNumber())
+                            } else if (mCells[k][j].equals(mCells[i][j]))
                             {
                                 mCells[k][j].doubleNumber();
-                                mCells[i][j].setNumber(0);
+                                mCells[i][j].clear();
 
                                 final int value = mCells[k][j].getNumber();
                                 if (maxScore < value)
@@ -621,24 +569,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
         if (moved)
         {
-            if (mOnStatusChangeListener != null)
-            {
-                mOnStatusChangeListener.onScoreAdded(Direct.Down, score);
-            }
-
-            mScore += score;
-            if (maxScore == SUCCESS_THRESHOLD)
-            {
-                win();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(true);
-            } else if (checkGameover())
-            {
-                gameover();
-                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(false);
-            } else
-            {
-                generateOneNumber();
-            }
+            update(Direct.Down, score);
         }
 
     }
@@ -654,6 +585,29 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         }
 
         return true;
+    }
+
+    private void update(Direct direct, int score)
+    {
+        if (mOnStatusChangeListener != null)
+        {
+            mOnStatusChangeListener.onScoreAdded(direct, score);
+        }
+
+        mScore += score;
+        if (maxScore == SUCCESS_THRESHOLD)
+        {
+            win();
+            if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(true);
+        } else
+        {
+            generateOneNumber();
+            if (checkGameover())
+            {
+                gameover();
+                if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(false);
+            }
+        }
     }
 
     public enum Direct
@@ -679,7 +633,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         Down
     }
 
-    public static interface OnStatusChangeListener
+    public interface OnStatusChangeListener
     {
         void onScoreAdded(Direct direct, int score);
 
