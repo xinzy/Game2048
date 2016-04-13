@@ -3,6 +3,8 @@ package com.xinzy.game2048.widget;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -606,6 +608,101 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
             {
                 gameover();
                 if (mOnStatusChangeListener != null) mOnStatusChangeListener.gameover(false);
+            }
+        }
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState()
+    {
+        Parcelable ss = super.onSaveInstanceState();
+        SavedState state = new SavedState(ss);
+
+        state.maxScore = maxScore;
+        state.mScore = mScore;
+
+        for (int i = 0; i < ROWS; i++)
+        {
+            for (int j = 0; j < COLS; j++)
+            {
+                state.mCells[i][j] = mCells[i][j].getNumber();
+            }
+        }
+
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state)
+    {
+        if (! (state instanceof SavedState))
+        {
+            super.onRestoreInstanceState(state);
+        } else
+        {
+            SavedState s = (SavedState) state;
+            super.onRestoreInstanceState(s.getSuperState());
+
+            mScore = s.mScore;
+            maxScore = s.maxScore;
+            for (int i = 0; i < ROWS; i++)
+            {
+                for (int j = 0; j < COLS; j++)
+                {
+                    mCells[i][j].setNumber(s.mCells[i][j]);
+                }
+            }
+        }
+    }
+
+    static class SavedState extends BaseSavedState
+    {
+        int[][] mCells;
+        int maxScore;
+        int mScore;
+
+        public SavedState(Parcel source)
+        {
+            super(source);
+            mCells = new int[ROWS][COLS];
+
+            maxScore = source.readInt();
+            mScore = source.readInt();
+            for (int i = 0; i < ROWS; i++)
+            {
+                source.readIntArray(mCells[i]);
+            }
+        }
+
+        public SavedState(Parcelable superState)
+        {
+            super(superState);
+            mCells = new int[ROWS][COLS];
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>()
+        {
+            public SavedState createFromParcel(Parcel in)
+            {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size)
+            {
+                return new SavedState[size];
+            }
+        };
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags)
+        {
+            super.writeToParcel(dest, flags);
+
+            dest.writeInt(maxScore);
+            dest.writeInt(mScore);
+            for (int i = 0; i < ROWS; i++)
+            {
+                dest.writeIntArray(mCells[i]);
             }
         }
     }
