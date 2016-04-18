@@ -18,6 +18,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Game
 
     private GameView mGameview;
     private ImageButton startButton;
+    private ImageButton rollbackButton;
     private ScoreTextView scoreText;
     private ScoreTextView maxScoreText;
 
@@ -31,9 +32,14 @@ public class GameActivity extends Activity implements View.OnClickListener, Game
         setContentView(R.layout.activity_game);
 
         mGameview = (GameView) findViewById(R.id.gameView);
+        mGameview.setCanRollback(true);
         mGameview.setOnStatusChangeListener(this);
+
         startButton = (ImageButton) findViewById(R.id.startBtn);
         startButton.setOnClickListener(this);
+        rollbackButton = (ImageButton) findViewById(R.id.rollbackBtn);
+        rollbackButton.setOnClickListener(this);
+
         scoreText = (ScoreTextView) findViewById(R.id.scoreText);
         maxScoreText = (ScoreTextView) findViewById(R.id.maxScoreText);
 
@@ -49,6 +55,10 @@ public class GameActivity extends Activity implements View.OnClickListener, Game
         case R.id.startBtn:
             mGameview.start();
             scoreText.setScore(0);
+            break;
+
+        case R.id.rollbackBtn:
+            mGameview.rollback();
             break;
         }
     }

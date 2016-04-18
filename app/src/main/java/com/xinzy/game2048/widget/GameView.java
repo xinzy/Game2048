@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.xinzy.game2048.util.Logger;
 import com.xinzy.game2048.util.Utils;
 
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     private int maxScore;
     private boolean isGameover;
     private boolean isWin;
+
+    private boolean canRollback;    //游戏是否支持回滚
+    private int[] savedStates;      //已保存的状态
 
     private boolean isInited;
     private CellView[][] mCells;
@@ -115,15 +119,20 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
     public void generateOneNumber()
     {
+        int max = 0;
         List<Point> blankPoint = new ArrayList<>(16);
         for (int i = 0; i < ROWS; i++)
         {
             for (int j = 0; j < COLS; j++)
             {
-                if (mCells[i][j].getNumber() == 0)
+                final int num = mCells[i][j].getNumber();
+                if (num == 0)
                 {
                     Point p = new Point(i, j);
                     blankPoint.add(p);
+                } else if (max < num)
+                {
+                    max = num;
                 }
             }
         }
@@ -131,9 +140,13 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         final int size = blankPoint.size();
         if (size > 0)
         {
+            final int count = COLS * ROWS;
+            float salt = (1 - size * 1f / count) * .2f + (float) (Math.log(max) / 20.f);
+
+            Logger.e("salt = " + salt);
             int position = (int) (Math.random() * size);
             Point p = blankPoint.get(position);
-            mCells[p.x][p.y].randomNumber();
+            mCells[p.x][p.y].randomNumber(salt);
         }
         blankPoint.clear();
     }
@@ -158,6 +171,8 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                 if (mCells[i][j].getNumber() == 0) return false;
             }
         }
+
+        if (mCells[0][0].equals(mCells[1][0])) return false;
 
         for (int i = 1; i < COLS; i++)
         {
@@ -219,6 +234,41 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     public boolean isGameover()
     {
         return isGameover;
+    }
+
+    public void setCanRollback(boolean canRollback)
+    {
+        this.canRollback = canRollback;
+    }
+
+    public void saveStates()
+    {
+        if (savedStates == null)
+        {
+            savedStates = new int[ROWS * COLS];
+        }
+
+        for (int i = 0; i < ROWS; i++)
+        {
+            for (int j = 0; j < COLS; j++)
+            {
+                savedStates[ROWS * i + j] = mCells[i][j].getNumber();
+            }
+        }
+    }
+
+    public void rollback()
+    {
+        if (savedStates != null)
+        {
+            for (int i = 0; i < ROWS; i++)
+            {
+                for (int j = 0; j < COLS; j++)
+                {
+                    mCells[i][j].setNumber(savedStates[ROWS * i + j]);
+                }
+            }
+        }
     }
 
     @Override
@@ -357,6 +407,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         int score = 0;
         boolean moved = false;
 
+        if (canRollback)
+        {
+            saveStates();
+        }
+
         for (int i = 0; i < ROWS; i ++)
         {
             for (int j = 1; j < COLS; j++)
@@ -415,6 +470,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
+
+        if (canRollback)
+        {
+            saveStates();
+        }
 
         for (int i = 0; i < ROWS; i++)
         {
@@ -475,6 +535,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         int score = 0;
         boolean moved = false;
 
+        if (canRollback)
+        {
+            saveStates();
+        }
+
         for (int j = 0; j < COLS; j ++)
         {
             for (int i = 1; i < ROWS; i++)
@@ -533,6 +598,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
+
+        if (canRollback)
+        {
+            saveStates();
+        }
 
         for (int j = 0; j < COLS; j++)
         {

@@ -112,16 +112,21 @@ public class CellView extends View
         redraw();
     }
 
-    public void randomNumber()
+    public void randomNumber(float salt)
     {
         int number = 2;
-        if (Math.random() > 0.75)
+        if (Math.random() + salt > 0.75)
         {
             number = 4;
         }
         setNumber(number);
 
         startAnimation(mShowAnim);
+    }
+
+    public void randomNumber()
+    {
+       randomNumber(0f);
     }
 
     private void redraw()
