@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import com.xinzy.game2048.util.Logger;
 import com.xinzy.game2048.util.Utils;
 
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
     public void generateOneNumber()
     {
-        int max = 0;
+        int max = 1;
         List<Point> blankPoint = new ArrayList<>(16);
         for (int i = 0; i < ROWS; i++)
         {
@@ -143,7 +142,6 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
             final int count = COLS * ROWS;
             float salt = (1 - size * 1f / count) * .2f + (float) (Math.log(max) / 20.f);
 
-            Logger.e("salt = " + salt);
             int position = (int) (Math.random() * size);
             Point p = blankPoint.get(position);
             mCells[p.x][p.y].randomNumber(salt);
