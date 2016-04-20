@@ -1,8 +1,12 @@
-.DS_Store
-/.gradle
-/.idea
-/gradle
+*.iml
+.gradle
 /local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
 /build
 /captures
+
 /app/build
+*.log
+*.keystore
