@@ -257,7 +257,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
     public void rollback()
     {
-        if (savedStates != null)
+        if (! isGameover && ! isWin && savedStates != null)
         {
             for (int i = 0; i < ROWS; i++)
             {
