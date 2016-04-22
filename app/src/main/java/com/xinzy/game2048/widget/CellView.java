@@ -63,20 +63,15 @@ public class CellView extends View
         setBackground(mBackground);
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        setTextSize(48);
+        setTextSize(24);
 
         mShowAnim = new ScaleAnimation(0.5f, 1.0f, 0.5f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         mShowAnim.setDuration(100);
     }
 
-    public void setTextSizeInDp(int dp)
+    public void setTextSize(int dp)
     {
-        setTextSize(Utils.dp2px(getContext(), dp));
-    }
-
-    public void setTextSize(int px)
-    {
-        this.mTextSize = px;
+        this.mTextSize = Utils.dp2px(getContext(), dp);
     }
 
     public void setTextColor(int color)

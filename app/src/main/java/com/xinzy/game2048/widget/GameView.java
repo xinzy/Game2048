@@ -218,7 +218,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
             drawable.setCornerRadius(Utils.dp2px(mContext, CellView.CORNER_SIZE_IN_DP));
             drawable.setColor(0x60000000);
             mTipView.setBackground(drawable);
-            mTipView.setTextSizeInDp(56);
+            mTipView.setTextSize(56);
             mTipView.setTextColor(0xFFE0E0E0);
             mTipView.setText(text);
         }
