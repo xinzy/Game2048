@@ -52,6 +52,6 @@ public class ColorUtil
 
     public static final int getTextColor(int num)
     {
-        return num >= 16 ? 0xFFFBF2E6 : 0xFF786B63;
+        return num >= 8 ? 0xFFFBF2E6 : 0xFF786B63;
     }
 }
