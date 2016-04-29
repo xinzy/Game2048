@@ -110,7 +110,7 @@ public class CellView extends View
     public void randomNumber(float salt)
     {
         int number = 2;
-        if (Math.random() + salt > 0.75)
+        if (Math.random() > 0.5)
         {
             number = 4;
         }

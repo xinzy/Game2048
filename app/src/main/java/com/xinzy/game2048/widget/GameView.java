@@ -13,7 +13,9 @@ import android.view.ViewTreeObserver;
 
 import com.xinzy.game2048.util.Utils;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -27,6 +29,8 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     private static final int CORNER_SIZE_IN_DP = 6;
     private static final int DIVIDE_SIZE_IN_DP = 8;
     private static final int COLOR_BACKGROUND = 0xFFBBADA0;
+
+    private static final int ROLLBACK_SIZE = 16;    //最多可回滚16步
 
     private static final int RESPONSE_DIVIDE = 20;  // 滑动事件响应最小像素数
     private static final int SUCCESS_THRESHOLD = 2048;// 游戏胜利的阈值
@@ -46,7 +50,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     private boolean isWin;
 
     private boolean canRollback;    //游戏是否支持回滚
-    private int[] savedStates;      //已保存的状态
+    private Deque<Integer[]> savedStatesQuene;   //已保存状态
 
     private boolean isInited;
     private CellView[][] mCells;
@@ -112,6 +116,10 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         isGameover = false;
         maxScore = 0;
         mScore = 0;
+        if (savedStatesQuene != null && ! savedStatesQuene.isEmpty())
+        {
+            savedStatesQuene.clear();
+        }
         generateOneNumber();
         generateOneNumber();
     }
@@ -241,9 +249,19 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
 
     public void saveStates()
     {
+        if (savedStatesQuene == null)
+        {
+            savedStatesQuene = new ArrayDeque<>(ROLLBACK_SIZE);
+        }
+
+        Integer[] savedStates = null;
+        if (savedStatesQuene.size() == ROLLBACK_SIZE)
+        {
+            savedStates = savedStatesQuene.pollFirst();
+        }
         if (savedStates == null)
         {
-            savedStates = new int[ROWS * COLS];
+            savedStates = new Integer[ROWS * COLS];
         }
 
         for (int i = 0; i < ROWS; i++)
@@ -253,17 +271,23 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                 savedStates[ROWS * i + j] = mCells[i][j].getNumber();
             }
         }
+        savedStatesQuene.add(savedStates);
     }
 
     public void rollback()
     {
-        if (! isGameover && ! isWin && savedStates != null)
+        if (! isGameover && ! isWin && savedStatesQuene != null)
         {
-            for (int i = 0; i < ROWS; i++)
+            Integer[] savedStates = savedStatesQuene.pollLast();
+
+            if (savedStates != null)
             {
-                for (int j = 0; j < COLS; j++)
+                for (int i = 0; i < ROWS; i++)
                 {
-                    mCells[i][j].setNumber(savedStates[ROWS * i + j]);
+                    for (int j = 0; j < COLS; j++)
+                    {
+                        mCells[i][j].setNumber(savedStates[ROWS * i + j]);
+                    }
                 }
             }
         }
