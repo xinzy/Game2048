@@ -147,12 +147,9 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         final int size = blankPoint.size();
         if (size > 0)
         {
-            final int count = COLS * ROWS;
-            float salt = (1 - size * 1f / count) * .2f + (float) (Math.log(max) / 20.f);
-
             int position = (int) (Math.random() * size);
             Point p = blankPoint.get(position);
-            mCells[p.x][p.y].randomNumber(salt);
+            mCells[p.x][p.y].randomNumber();
         }
         blankPoint.clear();
     }
