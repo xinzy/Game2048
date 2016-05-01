@@ -56,7 +56,7 @@ public class ScoreTextView extends TextView
     {
         mAnimator = new ValueAnimator();
         mAnimator.setIntValues(start, end);
-        mAnimator.setDuration(200);
+        mAnimator.setDuration(300);
         mAnimator.addUpdateListener(new ScoreAddListener());
         mAnimator.start();
     }

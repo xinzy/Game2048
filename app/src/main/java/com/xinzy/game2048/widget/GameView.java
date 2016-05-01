@@ -244,7 +244,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         this.canRollback = canRollback;
     }
 
-    public void saveStates()
+    public Integer[] saveStates()
     {
         if (savedStatesQuene == null)
         {
@@ -258,7 +258,7 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         }
         if (savedStates == null)
         {
-            savedStates = new Integer[ROWS * COLS];
+            savedStates = new Integer[ROWS * COLS + 1];
         }
 
         for (int i = 0; i < ROWS; i++)
@@ -269,13 +269,14 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
             }
         }
         savedStatesQuene.add(savedStates);
+        return savedStates;
     }
 
     public void rollback()
     {
         if (! isGameover && ! isWin && savedStatesQuene != null)
         {
-            Integer[] savedStates = savedStatesQuene.pollLast();
+            final Integer[] savedStates = savedStatesQuene.pollLast();
 
             if (savedStates != null)
             {
@@ -285,6 +286,12 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
                     {
                         mCells[i][j].setNumber(savedStates[ROWS * i + j]);
                     }
+                }
+
+                final int score = savedStates[ROWS * COLS];
+                if (score > 0)
+                {
+                    update(Direct.Null, - score);
                 }
             }
         }
@@ -425,10 +432,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
+        Integer[] savedStates = null;
 
         if (canRollback)
         {
-            saveStates();
+            savedStates = saveStates();
         }
 
         for (int i = 0; i < ROWS; i ++)
@@ -470,6 +478,10 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         {
             update(Direct.Left, score);
         }
+        if (savedStates != null)
+        {
+            savedStates[ROWS * COLS] = score;
+        }
     }
 
     private boolean noBlockForLeft(int row, int start, int end)
@@ -489,10 +501,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
+        Integer[] savedStates = null;
 
         if (canRollback)
         {
-            saveStates();
+            savedStates = saveStates();
         }
 
         for (int i = 0; i < ROWS; i++)
@@ -534,6 +547,10 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         {
             update(Direct.Right, score);
         }
+        if (savedStates != null)
+        {
+            savedStates[ROWS * COLS] = score;
+        }
     }
 
     private boolean noBlockForRight(int row, int start, int end)
@@ -553,10 +570,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
+        Integer[] savedStates = null;
 
         if (canRollback)
         {
-            saveStates();
+            savedStates = saveStates();
         }
 
         for (int j = 0; j < COLS; j ++)
@@ -598,6 +616,10 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         {
             update(Direct.Up, score);
         }
+        if (savedStates != null)
+        {
+            savedStates[ROWS * COLS] = score;
+        }
     }
 
     private boolean noBlockForUp(int col, int start, int end)
@@ -617,10 +639,11 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
     {
         int score = 0;
         boolean moved = false;
+        Integer[] savedStates = null;
 
         if (canRollback)
         {
-            saveStates();
+            savedStates = saveStates();
         }
 
         for (int j = 0; j < COLS; j++)
@@ -662,7 +685,10 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         {
             update(Direct.Down, score);
         }
-
+        if (savedStates != null)
+        {
+            savedStates[ROWS * COLS] = score;
+        }
     }
 
     private boolean noBlockForDown(int col, int start, int end)
@@ -816,7 +842,12 @@ public class GameView extends ViewGroup implements ViewTreeObserver.OnGlobalLayo
         /**
          * Move Down
          */
-        Down
+        Down,
+
+        /**
+         * Rollback
+         */
+        Null;
     }
 
     public interface OnStatusChangeListener
